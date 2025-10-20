@@ -1,0 +1,123 @@
+<div class="mall-container">
+  <!-- Header -->
+  <header class="mall-header">
+    <h1 class="mall-title">Shopping Mall Order Management 🎉</h1>
+  </header>
+
+  <!-- Main Content -->
+  <main class="mall-main">
+    <!-- Form Section -->
+    <section class="mall-card form-card">
+      <h2 class="mall-section-title">Create/Edit Order 🛒</h2>
+      <form (ngSubmit)="submitForm()" #orderForm="ngForm" class="mall-form">
+        <div class="form-group">
+          <label for="customerId" class="mall-label">Customer ID</label>
+          <input type="number" id="customerId" [(ngModel)]="newOrder.customerId" name="customerId" required min="1" class="mall-input">
+        </div>
+        <div class="form-group">
+          <label for="productName" class="mall-label">Product Name</label>
+          <input type="text" id="productName" [(ngModel)]="newOrder.productName" name="productName" required class="mall-input" (input)="checkStockStatus()">
+        </div>
+        <div class="form-group">
+          <label for="quantity" class="mall-label">Quantity</label>
+          <input type="number" id="quantity" [(ngModel)]="newOrder.quantity" name="quantity" required min="1" class="mall-input">
+        </div>
+        <div class="form-group">
+          <label for="price" class="mall-label">Price</label>
+          <input type="number" id="price" [(ngModel)]="newOrder.price" name="price" required min="0" step="0.01" class="mall-input">
+        </div>
+        <div class="form-group">
+          <label for="discount" class="mall-label">Discount (%)</label>
+          <input type="number" id="discount" [(ngModel)]="newOrder.discount" name="discount" min="0" max="100" class="mall-input">
+        </div>
+        <div class="form-group">
+          <label for="paymentMode" class="mall-label">Payment Mode</label>
+          <input type="text" id="paymentMode" [(ngModel)]="newOrder.paymentMode" name="paymentMode" class="mall-input">
+        </div>
+        <div class="form-group">
+          <label for="deliveryType" class="mall-label">Delivery Type</label>
+          <select id="deliveryType" [(ngModel)]="newOrder.deliveryType" name="deliveryType" class="mall-input" required>
+            <option value="">Select Delivery Type</option>
+            <option value="Home Delivery">Home Delivery</option>
+            <option value="Store Pickup">Store Pickup</option>
+            <option value="Express Delivery">Express Delivery</option>
+            <option value="Standard Shipping">Standard Shipping</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="orderDate" class="mall-label">Order Date</label>
+          <input type="datetime-local" id="orderDate" [(ngModel)]="newOrder.orderDate" name="orderDate" required class="mall-input">
+        </div>
+        <div class="form-group">
+          <label for="orderStatus" class="mall-label">Order Status</label>
+          <select id="orderStatus" [(ngModel)]="newOrder.orderStatus" name="orderStatus" class="mall-input">
+            <option value="Pending">Pending</option>
+            <option value="Shipped">Shipped</option>
+            <option value="Delivered">Delivered</option>
+          </select>
+        </div>
+        <button type="submit" [disabled]="!orderForm.valid" class="mall-button">{{ editMode ? 'Update Order ✨' : 'Submit Order ✨' }}</button>
+        <button type="button" *ngIf="editMode" (click)="cancelEdit()" class="mall-button cancel-button">Cancel</button>
+      </form>
+      <p class="stock-status" *ngIf="stockStatus">{{ stockStatus }}</p>
+    </section>
+
+    <!-- Table Section -->
+    <section class="mall-card table-card">
+      <h2 class="mall-section-title">List of Orders 🌸</h2>
+      <table class="mall-table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer ID</th>
+            <th>Order Date</th>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Discount</th>
+            <th>Total Price</th>
+            <th>Status</th>
+            <th>Payment Mode</th>
+            <th>Delivery Type</th>
+            <th>Updated At</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let order of orders" class="mall-row">
+            <td>{{ order.orderId }}</td>
+            <td>{{ order.customerId }}</td>
+            <td>{{ order.orderDate | date:'MMM d, y' }}</td>
+            <td>{{ order.productName }}</td>
+            <td>{{ order.quantity }}</td>
+            <td>{{ order.price }}</td>
+            <td>{{ order.discount }}%</td> <!-- Added % symbol -->
+            <td>{{ order.totalPrice }}</td>
+            <td>{{ order.orderStatus }}</td>
+            <td>{{ order.paymentMode }}</td>
+            <td>{{ order.deliveryType }}</td>
+            <td>{{ order.updatedAt | date:'MMM d, y h:mm a' }}</td>
+            <td>
+              <button class="mall-button update-button" (click)="editOrder(order)">Update</button>
+              <button class="mall-button delete-button" (click)="deleteOrder(order.orderId)">Delete</button>
+            </td>
+          </tr>
+          <tr *ngIf="orders.length === 0"><td colspan="13">No orders found.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- New Totals Section -->
+    <section class="mall-card totals-card">
+      <div class="totals-container">
+        <p class="totals-text">Total Orders: <span class="totals-value">{{ getTotalOrders() }}</span></p>
+        <p class="totals-text">Total Revenue: <span class="totals-value">{{ getTotalRevenue() | currency:'INR' }}</span></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="mall-footer">
+    <p class="mall-footer-text">© 2025 Shopping Mall Order Management 🛒 </p>
+  </footer>
+</div>
